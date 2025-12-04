@@ -270,10 +270,29 @@ export class DataService {
      * Filter employees by departments
      * @param {Array} departments - Array of department names
      */
-    filterByDepartments(departments) {
-        this.employeeCollection.setDepartmentFilters(departments);
-        this.notifyObservers('filter_applied', { departments });
+    // filterByDepartments(departments) {
+    //     this.employeeCollection.setDepartmentFilters(departments);
+    //     this.notifyObservers('filter_applied', { departments });
+    // }
+   filterByDepartments(departments = []) {
+    const collection = this.getEmployeeCollection(); // get your Collection instance
+
+    if (departments.length === 0) {
+        // Show all employees
+        collection.filteredEmployees = [...collection.employees]; // or use your collection's method to reset
+    } else {
+        collection.filteredEmployees = collection.employees.filter(emp =>
+            departments.includes(emp.department)
+        );
     }
+
+    // Reset pagination if needed
+    collection.setCurrentPage(1);
+
+    // Notify observers so UI updates
+    this.notifyObservers('filter_changed', collection.filteredEmployees);
+}
+
 
     /**
      * Sort employees
